@@ -110,7 +110,7 @@ def complete(request):
         login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
         # Initiate a data transfer task, then render 'complete.html'.
-        xfer_to_open_humans.delay(oh_id=oh_member.oh_id)
+        xfer_to_open_humans(oh_id=oh_member.oh_id)
         context = {'oh_id': oh_member.oh_id,
                    'oh_proj_page': settings.OH_ACTIVITY_PAGE}
         return render(request, 'oh_data_source/complete.html',
