@@ -5,9 +5,14 @@ from django.conf import settings
 from django.contrib.auth import login
 from django.shortcuts import redirect, render
 import requests
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
+
 
 from .models import OpenHumansMember
-from .tasks import xfer_to_open_humans
+from .tasks import xfer_to_open_humans, handle_uploaded_file
+from .forms import UploadFileForm
+
 
 # Open Humans settings
 OH_BASE_URL = 'https://www.openhumans.org'
@@ -107,7 +112,8 @@ def complete(request):
         # Log in the user.
         # (You may want this if connecting user with another OAuth process.)
         user = oh_member.user
-        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        login(request, user,
+              backend='django.contrib.auth.backends.ModelBackend')
 
         # Initiate a data transfer task, then render 'complete.html'.
         xfer_to_open_humans(oh_id=oh_member.oh_id)
@@ -118,3 +124,15 @@ def complete(request):
 
     logger.debug('Invalid code exchange. User returned to starting page.')
     return redirect('/')
+
+
+def upload_file(request):
+    print('running upload_file function')
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            handle_uploaded_file(request.FILES['file'])
+            return HttpResponseRedirect(reverse('oh_data_source.views.index'))
+    else:
+        form = UploadFileForm()
+    return render(request, 'index.html', {'form': form})
