@@ -93,6 +93,16 @@ def index(request):
     context = {'client_id': settings.OH_CLIENT_ID,
                'oh_proj_page': settings.OH_ACTIVITY_PAGE}
 
+    print('running upload_file function')
+
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            handle_uploaded_file(request.FILES['file'])
+            return HttpResponseRedirect(reverse('oh_data_source.views.index'))
+    else:
+        form = UploadFileForm()
+
     return render(request, 'oh_data_source/index.html', context=context)
 
 
@@ -124,15 +134,3 @@ def complete(request):
 
     logger.debug('Invalid code exchange. User returned to starting page.')
     return redirect('/')
-
-
-def upload_file(request):
-    print('running upload_file function')
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            handle_uploaded_file(request.FILES['file'])
-            return HttpResponseRedirect(reverse('oh_data_source.views.index'))
-    else:
-        form = UploadFileForm()
-    return render(request, 'index.html', {'form': form})
