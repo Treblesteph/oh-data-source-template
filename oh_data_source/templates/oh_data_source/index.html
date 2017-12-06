@@ -43,6 +43,16 @@
         Learn more by visiting:<br>
         <a href="{{ oh_proj_page }}">{{ oh_proj_page }}</a>
       </p>
+
+      <form enctype="multipart/form-data" method="post" action={% url "index" %}>
+        {% csrf_token %}
+        <input type="file"/>
+        <p>{{ form.non_field_errors }}</p>
+        <p>{{ form.file.label_tag }} {{ form.file.help_text }}</p>
+        <p>{{ form.file.errors }} {{ form.file }}</p>
+        <input type="submit" label="submit data" value="Upload"/>
+      </form>
+
       <h2>How it works</h2>
       <ol>
         <li><b>Click the button below</b><br>
@@ -60,9 +70,13 @@
       {% if client_id %}
       <a
         class="btn btn-primary btn-lg"
-        href="https://www.openhumans.org/direct-sharing/projects/oauth2/authorize/?client_id={{ client_id }}&response_type=code"
+        href="https://www.openhumans.org/direct-sharing/projects/oauth2/
+              authorize/?client_id={{ client_id }}&response_type=code";
+
         {% else %}
+
         class="btn btn-default disabled"
+
         {% endif %}
         >
         Start with Open Humans authorization
@@ -72,6 +86,7 @@
         This button is disabled because client_id hasn't been configured.
       </i></p>
       {% endif %}
+
     </div>
 
     <!-- Bootstrap core JavaScript
