@@ -151,3 +151,8 @@ def upload_file_to_oh(oh_member, filepath, metadata):
 
     print('Upload done: "{}" for member {}.'.format(
         os.path.basename(filepath), oh_member.oh_id))
+
+
+def handle_uploaded_file(f):
+    for chunk in f.chunks():
+        print(chunk)
