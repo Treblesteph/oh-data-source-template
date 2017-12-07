@@ -96,10 +96,14 @@ def index(request):
     print('running upload_file function')
 
     if request.method == 'POST':
+        print('running POST handling bit')
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
+            print('form is valid')
             handle_uploaded_file(request.FILES['file'])
-            return HttpResponseRedirect(reverse('oh_data_source.views.index'))
+            return HttpResponseRedirect(reverse('oh_data_source:index'))
+        else:
+            print('form not valid')
     else:
         form = UploadFileForm()
 
