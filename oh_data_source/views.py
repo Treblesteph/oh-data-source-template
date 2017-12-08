@@ -10,7 +10,7 @@ from django.core.urlresolvers import reverse
 
 
 from .models import OpenHumansMember
-from .tasks import xfer_to_open_humans, handle_uploaded_file
+from .tasks import xfer_to_open_humans, handle_uploaded_file, upload_file_to_oh
 from .forms import UploadFileForm
 
 
@@ -82,6 +82,8 @@ def oh_code_to_member(code):
         else:
             logger.warning('Neither token nor error info in OH response!')
     else:
+        print('OH_CLIENT_SECRET:')
+        print(OH_CLIENT_SECRET)
         logger.error('OH_CLIENT_SECRET or code are unavailable')
     return None
 
@@ -97,16 +99,34 @@ def index(request):
 
     if request.method == 'POST':
         print('running POST handling bit')
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            print('form is valid')
-            handle_uploaded_file(request.FILES['file'])
-            return HttpResponseRedirect(reverse('oh_data_source:index'))
-        else:
-            print('form not valid')
+
+        # Exchange code for token.
+        # This creates an OpenHumansMember and associated User account.
+        code = request.GET.get('code', '')
+        oh_member = oh_code_to_member(code=code)
+
+        if oh_member:
+            form = UploadFileForm(request.POST, request.FILES)
+
+            # Log in the user.
+            # (You may want this if connecting user with another OAuth process)
+            user = oh_member.user
+            login(request, user,
+                  backend='django.contrib.auth.backends.ModelBackend')
+
+            if form.is_valid():
+                print('form is valid')
+                handle_uploaded_file(request.FILES['file'])
+                xfer_to_open_humans(request.FILES['file'], oh_id=oh_member.oh_id)
+                context = {'oh_id': oh_member.oh_id,
+                           'oh_proj_page': settings.OH_ACTIVITY_PAGE}
+                return render(request, 'oh_data_source/complete.html',
+                              context=context)
+                # return HttpResponseRedirect(reverse('complete'))
+            else:
+                print('form not valid')
     else:
         form = UploadFileForm()
-
     return render(request, 'oh_data_source/index.html', context=context)
 
 
