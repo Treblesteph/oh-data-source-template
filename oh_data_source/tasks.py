@@ -66,14 +66,14 @@ def add_data_to_open_humans(oh_member, tempdir):
     will be cleaned up later. You can use the tempdir to stage the creation of
     files you plan to upload to Open Humans.
     """
-    # Create example file.
-    data_filepath, data_metadata = make_example_datafile(tempdir)
-
-    # Remove any files with this name previously added to Open Humans.
-    delete_oh_file_by_name(oh_member, filename=os.path.basename(data_filepath))
-
-    # Upload this file to Open Humans.
-    upload_file_to_oh(oh_member, data_filepath, data_metadata)
+    # # Create example file.
+    # data_filepath, data_metadata = make_example_datafile(tempdir)
+    #
+    # # Remove any files with this name previously added to Open Humans.
+    # delete_oh_file_by_name(oh_member,
+    #                        filename=os.path.basename(data_filepath))
+    # # Upload this file to Open Humans.
+    # upload_file_to_oh(oh_member, data_filepath, data_metadata)
 
 
 def make_example_datafile(tempdir):
@@ -130,7 +130,6 @@ def upload_file_to_oh(oh_member, filepath, metadata):
     if req1.status_code != 201:
         raise HTTPError(code=req1.status_code,
                         text='Bad response when starting file upload.')
-
     # Upload to S3 target.
     with open(filepath, 'rb') as fh:
         req2 = requests.put(url=req1.json()['url'], data=fh)
@@ -156,3 +155,6 @@ def upload_file_to_oh(oh_member, filepath, metadata):
 def handle_uploaded_file(f):
     for chunk in f.chunks():
         print(chunk)
+        print('name:')
+        print(f.name)
+    return f
