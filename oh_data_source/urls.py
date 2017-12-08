@@ -18,6 +18,7 @@ from django.contrib import admin
 
 from . import views
 
+app_name = 'oh_data_source'
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.index, name='index'),
