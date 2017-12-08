@@ -5,5 +5,5 @@ class UploadFileForm(forms.Form):
     print('making uploader')
     file = forms.FileField(
         label='Select file',
-        help_text='please select your twitter archive'
+        help_text='please select your twitter archive csv file'
         )
