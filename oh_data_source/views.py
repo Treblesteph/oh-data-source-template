@@ -99,35 +99,14 @@ def index(request):
 
     if request.method == 'POST':
         print('running POST handling bit')
-
-        # Exchange code for token.
-        # This creates an OpenHumansMember and associated User account.
-        code = request.GET.get('code', '')
-        oh_member = oh_code_to_member(code=code)
-
-        if oh_member:
-            form = UploadFileForm(request.POST, request.FILES)
-
-            # Log in the user.
-            # (You may want this if connecting user with another OAuth process)
-            user = oh_member.user
-            login(request, user,
-                  backend='django.contrib.auth.backends.ModelBackend')
-
-            if form.is_valid():
-                print('form is valid')
-                handle_uploaded_file(request.FILES['file'])
-                xfer_to_open_humans(request.FILES['file'], oh_id=oh_member.oh_id)
-                context = {'oh_id': oh_member.oh_id,
-                           'oh_proj_page': settings.OH_ACTIVITY_PAGE}
-                return render(request, 'oh_data_source/complete.html',
-                              context=context)
-                # return HttpResponseRedirect(reverse('complete'))
-            else:
-                print('form not valid')
-    else:
-        form = UploadFileForm()
-    return render(request, 'oh_data_source/index.html', context=context)
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            print('form is valid')
+            handle_uploaded_file(request.FILES['file'])
+            return render(request, 'oh_data_source/index.html',
+                          context=context)
+        else:
+            print('form not valid')
 
 
 def complete(request):
