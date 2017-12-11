@@ -5,14 +5,13 @@ from django.conf import settings
 from django.contrib.auth import login
 from django.shortcuts import redirect, render
 import requests
-from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
-
 
 from .models import OpenHumansMember
-from .tasks import xfer_to_open_humans, handle_uploaded_file, upload_file_to_oh
+from .tasks import xfer_to_open_humans, handle_uploaded_file
 from .forms import UploadFileForm
 
+OH_CLIENT_ID = os.getenv('OH_CLIENT_ID', '')
+OH_CLIENT_SECRET = os.getenv('OH_CLIENT_SECRET', '')
 
 # Open Humans settings
 OH_BASE_URL = 'https://www.openhumans.org'
