@@ -35,6 +35,31 @@
 
     <div class="container">
       <h1>One last step.</h1>
+
+      <form enctype="multipart/form-data" method="post" action={% url "complete" %}>
+        {% csrf_token %}
+        <input type="file" name="file"/>
+        <p>{{ form.non_field_errors }}</p>
+        <p>{{ form.file.label_tag }} {{ form.file.help_text }}</p>
+        <p>{{ form.file.errors }} {{ form.file }}</p>
+
+        {% if client_id %}
+          <input class="btn btn-primary btn-lg" type="submit"
+           label="submit data" value="Upload"/>
+        {% else %}
+          <a class="btn btn-default disabled"></a>
+        {% endif %}
+        {% if not client_id %}
+        <p class="text-muted"><i>
+          This button is disabled because client_id hasn't been configured.
+        </i></p>
+        {% endif %}
+      </form>
+
+
+
+
+
       <p class="lead">
         Thank you! We have your authorization from Open Humans.
       </p>
