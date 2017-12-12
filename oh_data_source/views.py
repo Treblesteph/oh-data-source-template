@@ -97,20 +97,6 @@ def index(request):
     context = {'client_id': settings.OH_CLIENT_ID,
                'oh_proj_page': settings.OH_ACTIVITY_PAGE}
 
-    print('running upload_file function')
-
-    if request.method == 'POST':
-        print('running POST handling bit')
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            print('form is valid')
-            handle_uploaded_file(request.FILES['file'])
-            return HttpResponseRedirect(reverse('oh_data_source:index'))
-        else:
-            print('form not valid')
-    else:
-        form = UploadFileForm()
-
     return render(request, 'oh_data_source/index.html', context=context)
 
 
@@ -133,12 +119,29 @@ def complete(request):
         login(request, user,
               backend='django.contrib.auth.backends.ModelBackend')
 
-        # Initiate a data transfer task, then render 'complete.html'.
-        xfer_to_open_humans(oh_id=oh_member.oh_id)
-        context = {'oh_id': oh_member.oh_id,
-                   'oh_proj_page': settings.OH_ACTIVITY_PAGE}
-        return render(request, 'oh_data_source/complete.html',
-                      context=context)
+        print('starting to process POST')
+
+        if request.method == 'POST':
+            print('running POST handling bit')
+            form = UploadFileForm(request.POST, request.FILES)
+            if form.is_valid():
+                print('form is valid')
+                handle_uploaded_file(request.FILES['file'])
+
+                # Initiate a data transfer task, then render 'complete.html'.
+                xfer_to_open_humans(request.FILES['file'],
+                                    oh_id=oh_member.oh_id)
+                # context = {'oh_id': oh_member.oh_id,
+                #            'oh_proj_page': settings.OH_ACTIVITY_PAGE}
+                # return render(request, 'oh_data_source/complete.html',
+                #               context=context)
+                return HttpResponseRedirect(reverse('complete'))
+            else:
+                print('form not valid')
+        else:
+            form = UploadFileForm()
+
+            return render(request, 'oh_data_source/complete.html')
 
     logger.debug('Invalid code exchange. User returned to starting page.')
     return redirect('/')
