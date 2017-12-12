@@ -28,7 +28,7 @@ OH_DIRECT_UPLOAD_COMPLETE = OH_API_BASE + '/project/files/upload/complete/'
 
 
 @shared_task
-def xfer_to_open_humans(file, oh_id, num_submit=0, logger=None, **kwargs):
+def xfer_to_open_humans(datafile, oh_id, num_submit=0, logger=None, **kwargs):
     """
     Transfer data to Open Humans.
 
@@ -42,7 +42,7 @@ def xfer_to_open_humans(file, oh_id, num_submit=0, logger=None, **kwargs):
     # Delete this even if an exception occurs.
     tempdir = tempfile.mkdtemp()
     try:
-        add_data_to_open_humans(oh_member, tempdir)
+        add_data_to_open_humans(datafile, oh_member, tempdir)
     finally:
         shutil.rmtree(tempdir)
 
@@ -56,7 +56,7 @@ def xfer_to_open_humans(file, oh_id, num_submit=0, logger=None, **kwargs):
     #     return
 
 
-def add_data_to_open_humans(oh_member, tempdir):
+def add_data_to_open_humans(datafile, oh_member, tempdir):
     """
     Add demonstration file to Open Humans.
 
@@ -72,8 +72,10 @@ def add_data_to_open_humans(oh_member, tempdir):
     # # Remove any files with this name previously added to Open Humans.
     # delete_oh_file_by_name(oh_member,
     #                        filename=os.path.basename(data_filepath))
-    # # Upload this file to Open Humans.
-    # upload_file_to_oh(oh_member, data_filepath, data_metadata)
+    # Upload this file to Open Humans.
+    data_filepath = 'xxx'
+    data_metadata = 'yyy'
+    upload_file_to_oh(datafile, oh_member, data_filepath, data_metadata)
 
 
 def make_example_datafile(tempdir):
@@ -108,7 +110,7 @@ def delete_oh_file_by_name(oh_member, filename):
               'file_basename': filename})
 
 
-def upload_file_to_oh(oh_member, filepath, metadata):
+def upload_file_to_oh(datafile, oh_member, filepath, metadata):
     """
     This demonstrates using the Open Humans "large file" upload process.
 
@@ -131,8 +133,8 @@ def upload_file_to_oh(oh_member, filepath, metadata):
         raise HTTPError(code=req1.status_code,
                         text='Bad response when starting file upload.')
     # Upload to S3 target.
-    with open(filepath, 'rb') as fh:
-        req2 = requests.put(url=req1.json()['url'], data=fh)
+    # with open(filepath, 'rb') as fh:
+        req2 = requests.put(url=req1.json()['url'], data=datafile)
     if req2.status_code != 200:
         raise HTTPError(code=req2.status_code,
                         text='Bad response when uploading to target.')
