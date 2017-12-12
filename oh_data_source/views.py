@@ -5,6 +5,9 @@ from django.conf import settings
 from django.contrib.auth import login
 from django.shortcuts import redirect, render
 import requests
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
+
 
 from .models import OpenHumansMember
 from .tasks import xfer_to_open_humans, handle_uploaded_file
@@ -102,10 +105,13 @@ def index(request):
         if form.is_valid():
             print('form is valid')
             handle_uploaded_file(request.FILES['file'])
-            return render(request, 'oh_data_source/index.html',
-                          context=context)
+            return HttpResponseRedirect(reverse('oh_data_source:index'))
         else:
             print('form not valid')
+    else:
+        form = UploadFileForm()
+
+    return render(request, 'oh_data_source/index.html', context=context)
 
 
 def complete(request):
