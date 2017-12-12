@@ -28,7 +28,7 @@ OH_DIRECT_UPLOAD_COMPLETE = OH_API_BASE + '/project/files/upload/complete/'
 
 
 @shared_task
-def xfer_to_open_humans(oh_id, num_submit=0, logger=None, **kwargs):
+def xfer_to_open_humans(file, oh_id, num_submit=0, logger=None, **kwargs):
     """
     Transfer data to Open Humans.
 
