@@ -86,6 +86,8 @@ def oh_code_to_member(code):
     else:
         print('OH_CLIENT_SECRET:')
         print(OH_CLIENT_SECRET)
+        print('code:')
+        print(code)
         logger.error('OH_CLIENT_SECRET or code are unavailable')
     return None
 
@@ -109,7 +111,11 @@ def complete(request):
     # Exchange code for token.
     # This creates an OpenHumansMember and associated User account.
     code = request.GET.get('code', '')
+    print("code in complete:")
+    print(code)
     oh_member = oh_code_to_member(code=code)
+    print("oh_member")
+    print(oh_member)
 
     if oh_member:
 
@@ -131,11 +137,11 @@ def complete(request):
                 # Initiate a data transfer task, then render 'complete.html'.
                 xfer_to_open_humans(request.FILES['file'],
                                     oh_id=oh_member.oh_id)
-                # context = {'oh_id': oh_member.oh_id,
-                #            'oh_proj_page': settings.OH_ACTIVITY_PAGE}
-                # return render(request, 'oh_data_source/complete.html',
-                #               context=context)
-                return HttpResponseRedirect(reverse('complete'))
+                context = {'oh_id': oh_member.oh_id,
+                           'oh_proj_page': settings.OH_ACTIVITY_PAGE}
+                return render(request, 'oh_data_source/complete.html',
+                              context=context)
+                # return HttpResponseRedirect(reverse('complete'))
             else:
                 print('form not valid')
         else:
