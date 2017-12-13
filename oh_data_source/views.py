@@ -106,19 +106,18 @@ def complete(request):
     """
     Receive user from Open Humans. Store data, start data upload task.
     """
+
     logger.debug("Received user returning from Open Humans.")
 
     # Exchange code for token.
     # This creates an OpenHumansMember and associated User account.
     if request.method == 'GET':
         code = request.GET.get('code', '')
-        print("code in complete:")
+        print("code in get:")
         print(code)
         oh_member = oh_code_to_member(code=code)
         print("oh_member")
         print(oh_member)
-
-    if oh_member:
 
         # Log in the user.
         # (You may want this if connecting user with another OAuth process.)
@@ -126,29 +125,38 @@ def complete(request):
         login(request, user,
               backend='django.contrib.auth.backends.ModelBackend')
 
-        print('starting to process POST')
+        context = {'oh_member': oh_member,
+                   'code': code}
+        return render(request, 'oh_data_source/complete.html',
+                      context=context)
 
-        if request.method == 'POST':
-            print('running POST handling bit')
-            form = UploadFileForm(request.POST, request.FILES)
-            if form.is_valid():
-                print('form is valid')
-                handle_uploaded_file(request.FILES['file'])
+    if request.method == 'POST':
+        print('running POST handling bit')
 
-                # Initiate a data transfer task, then render 'complete.html'.
-                xfer_to_open_humans(request.FILES['file'],
-                                    oh_id=oh_member.oh_id)
-                context = {'oh_id': oh_member.oh_id,
-                           'oh_proj_page': settings.OH_ACTIVITY_PAGE}
-                return render(request, 'oh_data_source/complete.html',
-                              context=context)
-                # return HttpResponseRedirect(reverse('complete'))
-            else:
-                print('form not valid')
+        oh_member = request.user.openhumansmember
+        print(oh_member.oh_id)
+        print('oh member:')
+        print(oh_member)
+
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            print('form is valid')
+            handle_uploaded_file(request.FILES['file'])
+
+            # Initiate a data transfer task, then render 'complete.html'.
+            xfer_to_open_humans(request.FILES['file'],
+                                oh_id=oh_member.oh_id)
+            context = {'oh_id': oh_member.oh_id,
+                       'oh_proj_page': settings.OH_ACTIVITY_PAGE}
+            return render(request, 'oh_data_source/complete.html',
+                          context=context)
+            # return HttpResponseRedirect(reverse('complete'))
         else:
-            form = UploadFileForm()
+            print('form not valid')
+    else:
+        form = UploadFileForm()
 
-            return render(request, 'oh_data_source/complete.html')
+        return render(request, 'oh_data_source/complete.html')
 
     logger.debug('Invalid code exchange. User returned to starting page.')
     return redirect('/')
