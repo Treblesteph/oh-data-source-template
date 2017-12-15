@@ -1,20 +1,24 @@
 import logging
 import os
+import json
 
 from django.conf import settings
 from django.contrib.auth import login
 from django.shortcuts import redirect, render
 import requests
-from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
 
+from urllib2 import HTTPError
 
 from .models import OpenHumansMember
-from .tasks import xfer_to_open_humans, handle_uploaded_file
+from .tasks import handle_uploaded_file, delete_all_oh_files
 from .forms import UploadFileForm
 
 OH_CLIENT_ID = os.getenv('OH_CLIENT_ID', '')
 OH_CLIENT_SECRET = os.getenv('OH_CLIENT_SECRET', '')
+
+OH_API_BASE = 'https://www.openhumans.org/api/direct-sharing'
+OH_DIRECT_UPLOAD = OH_API_BASE + '/project/files/upload/direct/'
+OH_DIRECT_UPLOAD_COMPLETE = OH_API_BASE + '/project/files/upload/complete/'
 
 # Open Humans settings
 OH_BASE_URL = 'https://www.openhumans.org'
@@ -144,8 +148,12 @@ def complete(request):
             handle_uploaded_file(request.FILES['file'])
 
             # Initiate a data transfer task, then render 'complete.html'.
-            xfer_to_open_humans(request.FILES['file'],
-                                oh_id=oh_member.oh_id)
+
+            upload_file_to_oh(request.user.openhumansmember,
+                              request.FILES['file'])
+
+            # xfer_to_open_humans(request.FILES['file'],
+            #                     oh_id=oh_member.oh_id)
             context = {'oh_id': oh_member.oh_id,
                        'oh_proj_page': settings.OH_ACTIVITY_PAGE}
             return render(request, 'oh_data_source/complete.html',
@@ -160,3 +168,60 @@ def complete(request):
 
     logger.debug('Invalid code exchange. User returned to starting page.')
     return redirect('/')
+
+
+def upload_file_to_oh(oh_member, filehandle):
+    """
+    This demonstrates using the Open Humans "large file" upload process.
+
+    The small file upload process is simpler, but it can time out. This
+    alternate approach is required for large files, and still appropriate
+    for small files.
+
+    This process is "direct to S3" using three steps: 1. get S3 target URL from
+    Open Humans, 2. Perform the upload, 3. Notify Open Humans when complete.
+    """
+    metadata = {
+        'tags': ['twitter', 'archive'],
+        'description': 'Archive tweets and metadata downloaded from twitter',
+    }
+
+    delete_all_oh_files(oh_member)
+
+    # Get the S3 target from Open Humans.
+    upload_url = '{}?access_token={}'.format(
+        OH_DIRECT_UPLOAD, oh_member.get_access_token())
+    print("s3 bit:")
+    print(upload_url)
+    print(oh_member.oh_id)
+
+    req1 = requests.post(
+        upload_url,
+        data={'project_member_id': oh_member.oh_id,
+              'filename': filehandle.name,
+              'metadata': json.dumps(metadata)})
+
+    if req1.status_code != 201:
+        raise HTTPError(upload_url, req1.status_code,
+                        'Bad response when starting file upload.')
+    # Upload to S3 target.
+    # with open(filepath, 'rb') as fh:
+    req2 = requests.put(url=req1.json()['url'], data=filehandle)
+
+    if req2.status_code != 200:
+        raise HTTPError(req1.json()['url'], req2.status_code,
+                        'Bad response when uploading to target.')
+
+    # Report completed upload to Open Humans.
+    complete_url = ('{}?access_token={}'.format(
+        OH_DIRECT_UPLOAD_COMPLETE, oh_member.get_access_token()))
+    req3 = requests.post(
+        complete_url,
+        data={'project_member_id': oh_member.oh_id,
+              'file_id': req1.json()['id']})
+    if req3.status_code != 200:
+        raise HTTPError(complete_url, req2.status_code,
+                        'Bad response when completing upload.')
+
+    print('Upload done: "{}" for member {}.'.format(
+          'django_test.txt', oh_member.oh_id))
