@@ -1,16 +1,66 @@
-# Open Humans Data Source template
+# Open Humans Data Source template and working demo
 
-## About
+> Work through this guide to add a data source to Open Humans
 
-This is a template Django/Celery app you can use to create an OAuth2 data
-source activity for Open Humans. It takes care of some common tasks, and is
-also a demo for any project interested in using Open Humans APIs.
+## Table of Contents
 
-### Why Django instead of Flask?
+- [About this repo](#about-this-repo)
+  - [Introduction](#introduction)
+  - [Workflow overview](#workflow-overview)
+  - [How does an Open Humans data source work?](#how-does-an-open-humans-data-source-work)
+- [Setting up local environment](#setting-up-local-environment)
+  - [Installing Foreman](#installing-foreman)
+  - [Installing RabbitMQ](#installing-rabbitmq)
+  - [Python](#Python)
+  - [pip](#pip)
+  - [Virtual environments](#virtual-environments)
 
-Because small projects sometimes grow.
 
-## Some highlights
+## About this repo
+
+### Introduction
+
+This repository is a template for, and working example of an Open Humans data source. If you want to add a data source to Open Humans, we strongly recommend following the steps in this document to work from this template repo.
+
+### Workflow overview
+
+- First get this demo project working. Detailed instructions can be found below, but this involves the following steps:
+  - set up local environment
+  - clone this template repo to your own machine
+  - create a project on OH
+  - try out adding dummy data as a user
+- When you have successfully created an Open Humans project and added dummy data using this template, you can start to edit the code to to add your desired data source
+  - `index.html` should remain how it is (except for changes to the text from default) to enable user authentication
+  - data should be added after user is directed back from Open Humans to `complete.html`
+  - we recommend starting by looking at the function `add_data_to_open_humans` in the `tasks.py` file
+
+Maybe note here about future updates to versions??
+
+### How does an Open Humans data source work?
+
+This template is a [Django](https://www.djangoproject.com/)/[Celery](http://www.celeryproject.org/) app that enables an Open Humans member to add dummy data to an Open Humans project. The user arrives on the landing page (`index.html`), and clicks a button which takes them to Open Humans where they can log in (and create an account if necessary). Once logged in to the Open Humans site, the user clicks another button to authorize this app to add data to their Open Humans account, then they return to this app (to `complete.html`) which notifies them that their data has been added and provides a link to the project summary page in Open Humans.
+
+Maybe detail here about how all this works?
+
+## Setting up local environment
+
+### Installing foreman
+
+Foreman is a manager for running procfile-based applications. It will no longer be required in future versions of this code as Heroku now has a built-in manager.
+
+### Installing RabbitMQ
+
+### Python
+
+### pip
+
+### Virtual environments
+
+
+
+
+
+
 
 ### Open Humans authorization
 
