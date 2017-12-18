@@ -10,7 +10,7 @@ import requests
 from urllib2 import HTTPError
 
 from .models import OpenHumansMember
-from .tasks import handle_uploaded_file, delete_all_oh_files
+from .tasks import delete_all_oh_files
 from .forms import UploadFileForm
 
 OH_CLIENT_ID = os.getenv('OH_CLIENT_ID', '')
@@ -151,8 +151,6 @@ def complete(request):
             upload_file_to_oh(request.user.openhumansmember,
                               request.FILES['file'])
 
-            # xfer_to_open_humans(request.FILES['file'],
-            #                     oh_id=oh_member.oh_id)
             context = {'oh_id': oh_member.oh_id,
                        'oh_proj_page': settings.OH_ACTIVITY_PAGE}
             return render(request, 'oh_data_source/complete.html',
