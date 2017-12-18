@@ -7,91 +7,14 @@ This example task:
 """
 from __future__ import absolute_import, print_function
 
-import json
-import os
-import shutil
-import tempfile
-import textwrap
-from urllib2 import HTTPError
-
-from celery import shared_task
-from django.utils import lorem_ipsum
 import requests
 
-from .models import OpenHumansMember
 
 OH_API_BASE = 'https://www.openhumans.org/api/direct-sharing'
 OH_EXCHANGE_TOKEN = OH_API_BASE + '/project/exchange-member/'
 OH_DELETE_FILES = OH_API_BASE + '/project/files/delete/'
 OH_DIRECT_UPLOAD = OH_API_BASE + '/project/files/upload/direct/'
 OH_DIRECT_UPLOAD_COMPLETE = OH_API_BASE + '/project/files/upload/complete/'
-
-
-@shared_task
-def xfer_to_open_humans(datafile, oh_id, num_submit=0, logger=None, **kwargs):
-    """
-    Transfer data to Open Humans.
-
-    num_submit is an optional parameter in case you want to resubmit failed
-    tasks (see comments in code).
-    """
-    print('Trying to copy data for {} to Open Humans'.format(oh_id))
-    oh_member = OpenHumansMember.objects.get(oh_id=oh_id)
-
-    # Make a tempdir for all temporary files.
-    # Delete this even if an exception occurs.
-    tempdir = tempfile.mkdtemp()
-    try:
-        add_data_to_open_humans(datafile, oh_member, tempdir)
-    finally:
-        shutil.rmtree(tempdir)
-
-    # Note: Want to re-run tasks in case of a failure?
-    # You can resubmit a task by calling it again. (Be careful with recursion!)
-    # e.g. to give up, resubmit, & try again after 10s if less than 5 attempts:
-    # if num_submit < 5:
-    #     num_submit += 1
-    #     xfer_to_open_humans.apply_async(
-    #         args=[oh_id, num_submit], kwargs=kwargs, countdown=10)
-    #     return
-
-
-def add_data_to_open_humans(datafile, oh_member, tempdir):
-    """
-    Add demonstration file to Open Humans.
-
-    This might be a good place to start editing, to add your own project data.
-
-    This template is written to provide the function with a tempdir that
-    will be cleaned up later. You can use the tempdir to stage the creation of
-    files you plan to upload to Open Humans.
-    """
-    # # Create example file.
-    # data_filepath, data_metadata = make_example_datafile(tempdir)
-    #
-    # # Remove any files with this name previously added to Open Humans.
-    # delete_oh_file_by_name(oh_member,
-    #                        filename=os.path.basename(data_filepath))
-    # Upload this file to Open Humans.
-    data_filepath = 'xxx'
-    data_metadata = 'yyy'
-    upload_file_to_oh(datafile, oh_member, data_filepath, data_metadata)
-
-
-def make_example_datafile(tempdir):
-    """
-    Make a lorem-ipsum file in the tempdir, for demonstration purposes.
-    """
-    filepath = os.path.join(tempdir, 'example_data.txt')
-    paras = lorem_ipsum.paragraphs(3, common=True)
-    output_text = '\n'.join(['\n'.join(textwrap.wrap(p)) for p in paras])
-    with open(filepath, 'w') as f:
-        f.write(output_text)
-    metadata = {
-        'tags': ['example', 'text', 'demo'],
-        'description': 'File with lorem ipsum text for demonstration purposes',
-    }
-    return filepath, metadata
 
 
 def delete_all_oh_files(oh_member):
