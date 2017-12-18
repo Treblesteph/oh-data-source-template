@@ -88,10 +88,6 @@ def oh_code_to_member(code):
         else:
             logger.warning('Neither token nor error info in OH response!')
     else:
-        print('OH_CLIENT_SECRET:')
-        print(OH_CLIENT_SECRET)
-        print('code:')
-        print(code)
         logger.error('OH_CLIENT_SECRET or code are unavailable')
     return None
 
@@ -117,11 +113,7 @@ def complete(request):
     # This creates an OpenHumansMember and associated User account.
     if request.method == 'GET':
         code = request.GET.get('code', '')
-        print("code in get:")
-        print(code)
         oh_member = oh_code_to_member(code=code)
-        print("oh_member")
-        print(oh_member)
 
         # Log in the user.
         # (You may want this if connecting user with another OAuth process.)
@@ -135,12 +127,7 @@ def complete(request):
                       context=context)
 
     if request.method == 'POST':
-        print('running POST handling bit')
-
         oh_member = request.user.openhumansmember
-        print(oh_member.oh_id)
-        print('oh member:')
-        print(oh_member)
 
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
@@ -188,18 +175,12 @@ def upload_file_to_oh(oh_member, filehandle):
     # Get the S3 target from Open Humans.
     upload_url = '{}?access_token={}'.format(
         OH_DIRECT_UPLOAD, oh_member.get_access_token())
-    print("s3 bit:")
-    print(upload_url)
-    print(oh_member.oh_id)
 
     req1 = requests.post(
         upload_url,
         data={'project_member_id': oh_member.oh_id,
               'filename': filehandle.name,
               'metadata': json.dumps(metadata)})
-
-    print('filehandle')
-    print(filehandle)
 
     if req1.status_code != 201:
         raise HTTPError(upload_url, req1.status_code,
