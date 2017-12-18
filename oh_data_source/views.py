@@ -145,7 +145,6 @@ def complete(request):
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
             print('form is valid')
-            handle_uploaded_file(request.FILES['file'])
 
             # Initiate a data transfer task, then render 'complete.html'.
 
@@ -201,11 +200,14 @@ def upload_file_to_oh(oh_member, filehandle):
               'filename': filehandle.name,
               'metadata': json.dumps(metadata)})
 
+    print('filehandle')
+    print(filehandle)
+
     if req1.status_code != 201:
         raise HTTPError(upload_url, req1.status_code,
                         'Bad response when starting file upload.')
     # Upload to S3 target.
-    # with open(filepath, 'rb') as fh:
+
     req2 = requests.put(url=req1.json()['url'], data=filehandle)
 
     if req2.status_code != 200:
