@@ -107,14 +107,3 @@ def delete_all_oh_files(oh_member):
                         params={'access_token': oh_member.get_access_token()},
                         data={'project_member_id': oh_member.oh_id,
                               'all_files': True})
-
-
-
-
-
-def handle_uploaded_file(f):
-    for chunk in f.chunks():
-        print(chunk)
-        print('name:')
-        print(f.name)
-    return f
