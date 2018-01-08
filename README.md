@@ -60,11 +60,13 @@ To install RabbitMQ you can follow [https://www.rabbitmq.com/download.html](thes
 
 ### Python
 
-For the current version of this template, you will need Python 2. We are working on an updated version to run on Python 3.
+For the current version of this template, you will need [Python 2](https://www.python.org/downloads/). We are working on an updated version to run on Python 3.
 
-You will need to ensure that the `python` alias points to Python 2 and not Python 3.
+You will need to ensure that the `python` alias points to Python 2 and not Python 3. You can do this by adding this line `alias python=python3` to your `.bashrc` file.
 
 ### pip
+
+[pip](https://pypi.python.org/pypi/pip) is a package management system used to install and manage software packages written in Python. It is available [here](https://pip.pypa.io/en/stable/installing/).
 
 ### Virtual environments
 
