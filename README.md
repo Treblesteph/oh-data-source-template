@@ -30,7 +30,7 @@ This repository is a template for, and working example of an Open Humans data so
   - create a project on OH
   - try out adding dummy data as a user
 - When you have successfully created an Open Humans project and added dummy data using this template, you can start to edit the code to to add your desired data source
-  - `index.html` should remain how it is (except for changes to the text from default) to enable user authentication
+  - the template text in `index.html` can be edited for your specific project, but mostly this file can remain as it is, to enable user authentication
   - data should be added after user is directed back from Open Humans to `complete.html`
   - we recommend starting by looking at the function `add_data_to_open_humans` in the `tasks.py` file
 
@@ -40,17 +40,29 @@ Maybe note here about future updates to versions??
 
 This template is a [Django](https://www.djangoproject.com/)/[Celery](http://www.celeryproject.org/) app that enables an Open Humans member to add dummy data to an Open Humans project. The user arrives on the landing page (`index.html`), and clicks a button which takes them to Open Humans where they can log in (and create an account if necessary). Once logged in to the Open Humans site, the user clicks another button to authorize this app to add data to their Open Humans account, then they return to this app (to `complete.html`) which notifies them that their data has been added and provides a link to the project summary page in Open Humans.
 
-Maybe detail here about how all this works?
+*** screenshots of steps
+
+*** detail here about how all this works (eg. code workflow?) or actually better after setting up?
 
 ## Setting up local environment
 
 ### Installing foreman
 
-Foreman is a manager for running procfile-based applications. It will no longer be required in future versions of this code as Heroku now has a built-in manager.
+[Foreman](https://ddollar.github.io/foreman/) is a manager for running [procfile-based applications](https://devcenter.heroku.com/articles/procfile). It will no longer be required in future versions of this code since latest versions of Heroku now have a built-in manager.
+
+To install Foreman, you can use `gem install foreman`. If you have trouble with this or do not have a Ruby gem installer, you can follow the Foreman installation instructions [here](https://theforeman.org/manuals/1.16/index.html#3.InstallingForeman).
 
 ### Installing RabbitMQ
 
+[RabbitMQ](http://www.rabbitmq.com) is an open source [message broker](https://en.wikipedia.org/wiki/Message_broker) used by this application.
+
+To install RabbitMQ you can follow [https://www.rabbitmq.com/download.html](these instructions), or if you are using a Mac and have Homebrew installed, you can simply type `brew install rabbitmq`.
+
 ### Python
+
+For the current version of this template, you will need Python 2. We are working on an updated version to run on Python 3.
+
+You will need to ensure that the `python` alias points to Python 2 and not Python 3.
 
 ### pip
 
