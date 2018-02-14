@@ -13,7 +13,7 @@
 - [Setting up local environment](#setting-up-local-environment)
   - [Installing Foreman](#installing-foreman)
   - [Installing RabbitMQ](#installing-rabbitmq)
-  - [Python](#Python)
+  - [Python](#python)
   - [pip](#pip)
   - [Virtual environments](#virtual-environments)
   - [Installing dependancies](#installing-dependancies)
