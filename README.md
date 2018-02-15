@@ -243,6 +243,7 @@ Before starting to edit the code in this demo to create your own project, it may
 
 - Upon arrival at the app, the user sees the homepage (the `index.html` file), on this page is a button which transfers the user to Open Humans for authorization
 - The user logs in to their Open Humans account, and clicks to authorize the app to add data, this directs them back to the `complete.html` file
+- The `complete` function in the file `views.py` receives a code from Open Humans, exchanges it for a token, and uses this token to retrieve the project member ID which is stored in the `OpenHumansMember` model
 - As this page is loaded, an automatic, asynchronous data upload to Open Humans is triggered via the method `xfer_to_open_humans`
   - `xfer_to_open_humans` takes the member ID (which was retrieved during authentication over at the Open Humans site), and runs the method `add_data_to_open_humans`
   - `add_data_to_open_humans` runs with three steps:
@@ -253,65 +254,17 @@ Before starting to edit the code in this demo to create your own project, it may
     - gets S3 target for storage
     - performs data upload to this target
     - notifies when the upload is complete
+    
+***A note on asynchronosity**: The `celery.py` file sets up asynchronous tasks for the app. The function `xfer_to_open_humans` in `tasks.py` is called (from `complete` function in `views.py`) asynchronously, by the presence of `.delay` in the function call:*
 
-### Editing the template
+>         *xfer_to_open_humans.delay(oh_id=oh_member.oh_id)*
 
+*Sometimes uploads can take a long time so we advise using the delay so that this does not prevent the app from processing other events. However if you wish to run your app without asynchronosity, you can simply remove the `.delay` component from this function call.
 
----
+## Editing the template
 
----
+Now you have worked through to create a working demo, and should understand roughly how the demo works, you are ready to customise the code to create your own Open Humans data source. Use the code you have in this repository as a template for your app.
 
----
+You are likely to want to start making changes in the `tasks.py` file, which is where much of the logic is stored. Intead of generating a dummy data file you will want to think about how to get your own data into the app, whether it is a previously downloaded file, which needs to be processed and/or vetted by the app, or you are working from an external api.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### Open Humans authorization
-
-The `complete` function view in `oh_data_source.views` handles receiving
-a code from Open Humans, exchanging it for a token, using the token to
-retrieve project member ID, and stores this in the `OpenHumansMember` model.
-
-### Asynchronous tasks
-
-The `oh_data_source.celery` sets up asynchronous tasks for the app. This is
-used to asynchronously run `xfer_to_open_humans` in `oh_data_source.tasks`.
-
-#### Why asynchonous?
-
-Sometimes it takes a long time. This is bad, the web app will not process
-other requests.
-
-### Upload to Open Humans
-
-Template code for uploading an example file to a member account, as well as
-demo code for file deletion.
+Good luck, and please do [get in touch]((http://github.com/OpenHumans/oh-data-source-template/issues)) to ask questions, give suggestions, or join in with our [community chat]http://openhumans.slack.com!
