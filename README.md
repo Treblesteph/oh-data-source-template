@@ -269,4 +269,4 @@ Now you have worked through to create a working demo, and should understand roug
 
 You are likely to want to start making changes in the `tasks.py` file, which is where much of the logic is stored. Intead of generating a dummy data file you will want to think about how to get your own data into the app, whether it is a previously downloaded file, which needs to be processed and/or vetted by the app, or you are working from an external api.
 
-Good luck, and please do [get in touch]((http://github.com/OpenHumans/oh-data-source-template/issues)) to ask questions, give suggestions, or join in with our [community chat]http://openhumans.slack.com!
+Good luck, and please do [get in touch]((http://github.com/OpenHumans/oh-data-source-template/issues)) to ask questions, give suggestions, or join in with our [community chat](http://openhumans.slack.com!
