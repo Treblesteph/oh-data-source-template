@@ -43,30 +43,32 @@ This repository is a template for, and working example of an Open Humans data so
 
 - First get this demo project working. Detailed instructions can be found below, but this involves the following steps:
   - clone this template repo to your own machine
-  - set up local environment
+  - set up your local development environment
   - create a project on OH
-  - finalise app setup and Heroku deployment
+  - finalise local app setup and remote Heroku deployment
   - try out adding dummy data as a user
-- When you have successfully created an Open Humans project and added dummy data using this template, you can start to edit the code to to add your desired data source. This will vary depending on your project needs, but the following hints may help you to get started:
+- When you have successfully created an Open Humans project and added dummy data using this template, you can start to customise the code to to add your desired data source. This will vary depending on your project needs, but the following hints may help you to get started:
   - the template text in `index.html` can be edited for your specific project, but mostly this file can remain as it is, to enable user authentication
   - data should be added after the user is directed back from Open Humans to `complete.html`
   - we recommend starting by looking at the function `add_data_to_open_humans` in the `tasks.py` file
 
-Maybe note here about future updates to versions??
 
 ### How does an Open Humans data source work?
 
-This template is a [Django](https://www.djangoproject.com/)/[Celery](http://www.celeryproject.org/) app that enables an Open Humans member to add dummy data to an Open Humans project. The user arrives on the landing page (`index.html`), and clicks a button which takes them to Open Humans where they can log in (and create an account if necessary). Once logged in to the Open Humans site, the user clicks another button to authorize this app to add data to their Open Humans account, then they return to this app (to `complete.html`) which notifies them that their data has been added and provides a link to the project summary page in Open Humans.
+This template is a [Django](https://www.djangoproject.com/)/[Celery](http://www.celeryproject.org/) app that enables the end user - an Open Humans member - to add dummy data to an Open Humans project. The user arrives on the landing page (`index.html`), and clicks a button which takes them to Open Humans where they can log in (and create an account if necessary). Once logged in to the Open Humans site, the user clicks another button to authorize this app to add data to their Open Humans account, then they return to this app (to `complete.html`) which notifies them that their data has been added and provides a link to the project summary page in Open Humans.
 
-So let's get that demo working on your machine, and you should be able to complete those steps as a user by running the app locally, before moving on to edit the code for your data source.
+So let's get that demo working on your machine, and you should be able to complete those steps as a user by running the app, before moving on to edit the code so it adds your custom data source instead of a dummy file.
 
 *** screenshots of steps
 
-*** detail here about how all this works (eg. code workflow?) or actually better after setting up?
 
 ## Cloning this template
 
-In your terminal, navigate to the folder in which you want to store this repo, and enter the command `git clone git@github.com:OpenHumans/oh-data-source-template.git`. This should create a new folder named `oh-data-source-template` which contains all the code to create the working demo.
+In your terminal, navigate to the folder in which you want to store this repo, and enter the command
+
+`git clone git@github.com:OpenHumans/oh-data-source-template.git`
+
+This should create a new folder named `oh-data-source-template` which contains all the code to create the working demo.
 
 ## Setting up local environment
 
@@ -103,15 +105,19 @@ We will set up the virtual environment here, and then work from within it for th
 1. install the Python package  [virtualenv](https://virtualenv.pypa.io/en/stable/), using pip: `pip install virtualenv` or `pip2 install virtualenv`
 2. navigate to your project folder for this template repo, and enter the command `virtualenv -v --python=python2.7 .env_oh_project`
 
-This creates a folder named `.env_oh_project` in the project directory which will contain the Python executable files and a copy of the pip library. *Make sure to add this folder to the `.gitignore` so it does not get uploaded when you push your changes*. This virtual environment will be used for the remainder of this tutorial. To use it, we first need to activate, by entering the command `source oh_project/bin/activate`.
+This creates a folder named `.env_oh_project` in the project directory which will contain the Python executable files and a copy of the pip library.
+
+*Make sure to add this folder to the `.gitignore` so it does not get uploaded when you push your changes*.
+
+This virtual environment will be used for the remainder of this tutorial. To use it, we first need to activate, by entering the command `source oh_project/bin/activate`.
 
 ***Note that whenever you open a new terminal tab or window, you will need to activate the virtual environment again. If you are unsure whether you are working within the virtual environment, you can check by entering the command `echo $VIRTUAL_ENV`, this should return the name of the virtual environment that you are working in, or a blank line if you are not in a virtual environment.***
 
-Virtual environments can be deactivated by simply entering the command `deactivate`.
+Virtual environments can be deactivated by simply entering the command `deactivate`. To learn more about virtual environments and tools for managing them, check out [the Python docs](http://docs.python-guide.org/en/latest/dev/virtualenvs/#virtualenvironments-ref).
 
 ### Installing dependancies
 
-First make sure that you are inside your virtual environment (try `echo $VIRTUAL_ENV`) for this project, and that you have navigated to the project folder. Next you can install all dependancies with:
+First make sure that you are inside your virtual environment for this project (try `echo $VIRTUAL_ENV`), and that you have navigated to the project folder. Next you can install all dependancies with:
 
 `pip install -r requirements.txt`
 
@@ -119,7 +125,7 @@ First make sure that you are inside your virtual environment (try `echo $VIRTUAL
 
 ### Foreman environment
 
-The Foreman environment contains configurations for running the application. It **should never be committed to git** and should be kept private as it contains secrets. First copy the contents of the template environment file, `env.example`, paste into a new file, and save with the filename `.env` we will go back and alter the contents after creating a project on the Open Humans site.
+The Foreman environment contains configurations for running the application. It **should never be committed to git** and should be kept private as it contains secrets.  First copy the contents of the template environment file, `env.example`, paste into a new file, and save with the filename `.env` we will go back and alter the contents after creating a project on the Open Humans site. The `.env` filename should already be in your `.gigignore`, but it is worth double-checking to make sure.
 
 ## Creating an Open Humans project
 
@@ -127,13 +133,13 @@ Head to http://openhumans.org/direct-sharing/projects/manage to create an OAuth2
 
 1. Click the button to `Create a new OAuth2 data request project`
   *** add screenshot 0-oh-screen-createproject
-2. Fill out the form for your project description. All of this information can be edited later, so don't worry if you aren't sure about it all just yet. However make sure you fill out the following fields:
+2. Fill out the form for your project description. All of this information can be edited later, so don't worry if you aren't sure about it all just yet. However do make sure you fill out the following fields:
   **Description of data you plan to upload to member accounts** - if you leave this field blank, Open Humans will assume that your project doesn't plan to add data
   **Enrollment URL** - set this to `http://127.0.0.1:5000`, this should then automatically set the redirect URL to `http://127.0.0.1:5000/complete`
 
 When you have created the project, you'll be able to click on its name in the `project management page` to show its information. From here, get the `activity page`, `client ID`, and `client secret` and set them in your `.env` file. The ID and secret identify and authorize your app. They are used for user authorization and data management.
 
-*Keep your client secret private*, it should not be committed to a repository. In Heroku it will be set as an environment variable, and locally it will be available from the `.env`.
+*Keep your client secret private*, it should not be committed to a repository. In Heroku it will be kept private as an environment variable, and locally it will be available from the `.env` file which should not be committed to git.
 
 ## Final steps of app setup
 
@@ -145,15 +151,15 @@ In the main project directory, run the `migrate` command followed by `collectsta
 
 `foreman run python manage.py collectstatic`
 
-*Please note you may see a warning message similar to:*
+*Please note you can ignore the following warning message:*
  > You have requested to collect static files at the destination location as specified in your settings:
 
  > > development:~/your_project/staticfiles
 
  > This will overwrite existing files!
+   
  > Are you sure you want to do this?
 
-*This is normal so you can just ignore it.*
 
 Now we are ready to run the app locally. Enter the command `foreman start`, and don't worry if you see the following warning:
 
@@ -167,7 +173,7 @@ Now head over to http://127.0.0.1:5000 in your browser to see your app running. 
 
 Now you have your application built and running locally, we'll head over to Heroku where the app will be deployed remotely.
 
-If you have hit any problems so far, please do let us know in [Github issues](http://github.com/OpenHumans/oh-data-source-template/issues) or over at our [Slack channel](http://openhumans.slack.com)
+If you have hit any problems so far, please do let us know in [Github issues](http://github.com/OpenHumans/oh-data-source-template/issues) or come and chat with us over at our [Slack channel](http://openhumans.slack.com).
 
 ## Heroku deployment
 
@@ -179,11 +185,15 @@ If you don't already have a Heroku account, head to http://www.heroku.com/ to cr
 
 Make sure you have installed the [Heroku command line interface](https://devcenter.heroku.com/articles/heroku-cli), then, from your terminal, you can log in and create your app with the following commands:
 
-`heroku login` *you will be asked for your Heroku credentials*
+`heroku login`
+
+> *you will be asked for your Heroku credentials*
 
 `heroku apps:create your-app-name`
 
-If you use Heroku's free default domain, this will be set by the name you choose here, i.e. `https://your-app-name.herokuapp.com`.
+If you use Heroku's free default domain, this will be set by the name you choose here, i.e. you will have
+
+`https://your-app-name.herokuapp.com`
 
 ### App configuration
 
@@ -211,7 +221,7 @@ You can watch logs with the command `heroku logs -t`.
 
 ## Adding dummy data
 
-To add dummy data to your project, first go to the url for your app (https://your-app-name.herokuapp.com), you should see the following page:
+To test out the app as a user, you can add dummy data to your project. First go to the url for your app (https://your-app-name.herokuapp.com), you should see the following page:
 
 *** screenshot of app
 
@@ -230,6 +240,19 @@ You can then click to return to Open Humans to check that the demo data has been
 ### Under the hood
 
 Before starting to edit the code in this demo to create your own project, it may be useful to understand what the existing code is doing.
+
+- Upon arrival at the app, the user sees the homepage (the `index.html` file), on this page is a button which transfers the user to Open Humans for authorization
+- The user logs in to their Open Humans account, and clicks to authorize the app to add data, this directs them back to the `complete.html` file
+- As this page is loaded, an automatic, asynchronous data upload to Open Humans is triggered via the method `xfer_to_open_humans`
+  - `xfer_to_open_humans` takes the member ID (which was retrieved during authentication over at the Open Humans site), and runs the method `add_data_to_open_humans`
+  - `add_data_to_open_humans` runs with three steps:
+    - creates a dummy data file, for demo purposes only (using `make_example_datafile` method)
+    - deletes any previous files uploaded with this name (using `delete_oh_file_by_name` method)
+    - takes the file path, metadata, and user ID, and uploads to Open Humans (using `upload_file_to_oh` method)
+  - `upload_file_to_oh` performs the following steps:
+    - gets S3 target for storage
+    - performs data upload to this target
+    - notifies when the upload is complete
 
 ### Editing the template
 
