@@ -257,7 +257,7 @@ Before starting to edit the code in this demo to create your own project, it may
     
 ***A note on asynchronosity**: The `celery.py` file sets up asynchronous tasks for the app. The function `xfer_to_open_humans` in `tasks.py` is called (from `complete` function in `views.py`) asynchronously, by the presence of `.delay` in the function call:*
 
->         *xfer_to_open_humans.delay(oh_id=oh_member.oh_id)*
+>         xfer_to_open_humans.delay(oh_id=oh_member.oh_id)
 
 *Sometimes uploads can take a long time so we advise using the delay so that this does not prevent the app from processing other events. However if you wish to run your app without asynchronosity, you can simply remove the `.delay` component from this function call.
 
